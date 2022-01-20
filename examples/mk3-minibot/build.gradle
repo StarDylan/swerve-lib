@@ -6,10 +6,6 @@ plugins {
     id 'com.github.johnrengelman.shadow'
 }
 
-application {
-    mainClassName('com.swervedrivespecialties.examples.mk3minibot.Main')
-}
-
 targetCompatibility = JavaVersion.VERSION_11
 sourceCompatibility = JavaVersion.VERSION_11
 
