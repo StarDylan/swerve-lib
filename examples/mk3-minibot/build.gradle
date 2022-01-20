@@ -9,6 +9,9 @@ plugins {
 targetCompatibility = JavaVersion.VERSION_11
 sourceCompatibility = JavaVersion.VERSION_11
 
+def ROBOT_MAIN_CLASS = "frc.robot.Main"
+
+
 deploy {
     targets {
         roborio(getTargetTypeClass('RoboRIO')) {
@@ -37,16 +40,33 @@ deploy {
 }
 
 dependencies {
-    implementation wpi.deps.wpilib()
-    implementation wpi.deps.vendor.java()
+    implementation wpi.java.deps.wpilib()
+    implementation wpi.java.vendor.java()
 
-    nativeZip wpi.deps.wpilibJni(wpi.platforms.roborio)
-    nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
+    roborioDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.roborio)
+    roborioDebug wpi.java.vendor.jniDebug(wpi.platforms.roborio)
 
-    nativeDesktopZip wpi.deps.wpilibJni(wpi.platforms.desktop)
-    nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
+    roborioRelease wpi.java.deps.wpilibJniRelease(wpi.platforms.roborio)
+    roborioRelease wpi.java.vendor.jniRelease(wpi.platforms.roborio)
 
-    simulation wpi.deps.sim.gui(wpi.platforms.desktop, false)
+    nativeDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.desktop)
+    nativeDebug wpi.java.vendor.jniDebug(wpi.platforms.desktop)
+    simulationDebug wpi.sim.enableDebug()
 
-    implementation project(':')
+    nativeRelease wpi.java.deps.wpilibJniRelease(wpi.platforms.desktop)
+    nativeRelease wpi.java.vendor.jniRelease(wpi.platforms.desktop)
+    simulationRelease wpi.sim.enableRelease()
+
 }
+jar {
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+// Configure jar and deploy tasks
+deployArtifact.jarTask = jar
+wpi.java.configureExecutableTasks(jar)
+wpi.java.configureTestTasks(test)
+
+
