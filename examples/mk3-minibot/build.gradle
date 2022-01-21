@@ -1,6 +1,7 @@
 import edu.wpi.first.gradlerio.deploy.roborio.RoboRIO
 
 plugins {
+    id 'application'
     id "java"
     id "edu.wpi.first.GradleRIO" version "2022.1.1"
     id 'com.github.johnrengelman.shadow'
@@ -11,6 +12,9 @@ sourceCompatibility = JavaVersion.VERSION_11
 
 def ROBOT_MAIN_CLASS = "frc.robot.Main"
 
+application {
+    mainClass.set('com.swervedrivespecialties.examples.mk3minibot.Main')
+}
 
 deploy {
     targets {
@@ -57,6 +61,9 @@ dependencies {
     nativeRelease wpi.java.vendor.jniRelease(wpi.platforms.desktop)
     simulationRelease wpi.sim.enableRelease()
 
+
+    implementation project(':')
+
 }
 jar {
     from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
@@ -65,7 +72,6 @@ jar {
 }
 
 // Configure jar and deploy tasks
-deployArtifact.jarTask = jar
 wpi.java.configureExecutableTasks(jar)
 wpi.java.configureTestTasks(test)
 
